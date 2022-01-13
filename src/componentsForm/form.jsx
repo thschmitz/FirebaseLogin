@@ -4,18 +4,54 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import InputAdornment from '@mui/material/InputAdornment';
 import "../App.css"
 import { Stepper, Step, StepLabel } from '@material-ui/core'
+import {db, auth} from "../Api"
 
 function DadosUsuario(props){
 
     const [etapaAtual, setEtapaAtual] = useState();
+    const [id, setId] = useState();
 
-    useEffect(() => {
-    }, [])
 
     function funcoes(){
         document.querySelector(`#nomeCriar`).value = "";
         document.querySelector(`#emailCriar`).value = "";
         document.querySelector(`#senhaCriar`).value = "";
+    }
+
+    function criarConta(e) {
+        e.preventDefault()
+        const nome = document.getElementById("nomeCriar").value;
+        const email = document.getElementById("emailCriar").value;
+        const senha = document.getElementById("senhaCriar").value;
+
+        auth.createUserWithEmailAndPassword(email, senha)
+        .then((authUser) => {
+            authUser.user.updateProfile({
+                displayName:nome
+            })
+
+            const id = authUser.uid
+            setId(id)
+        })
+
+
+        db.collection("users").doc(id).set({
+            nome: nome,
+            email: email,
+            senha: senha
+        }, {merge: true})
+
+        funcoes()
+    }
+
+    function logarConta(e) {
+        e.preventDefault();
+        const email = document.getElementById("emailLogin").value;
+        const senha = document.getElementById("senhaLogin").value;
+
+        auth.signInWithEmailAndPassword(email, senha)
+        .then
+
     }
     
     function abreModalLogin(e){
@@ -56,7 +92,7 @@ function DadosUsuario(props){
                     <TextField id="emailCriar" label="Email" type="email" required margin="normal" fullWidth variant="outlined"/>
                     <TextField id="senhaCriar" label="Senha" type="password" required margin="normal" fullWidth variant="outlined"/>
                     <div className="botao">
-                        <Button id="botaoCriar" type="submit" variant="contained" color="primary">Criar conta</Button>
+                        <Button id="botaoCriar" onClick={(e) => criarConta(e)} type="submit" variant="contained" color="primary">Criar conta</Button>
                         <Button type="submit" variant="contained" onClick={(e)=>abreModalLogin(e)} color="primary">Ja tem uma conta?!</Button>
                     </div>
                     
@@ -77,7 +113,7 @@ function DadosUsuario(props){
                         <TextField id="senhaLogin" label="Senha" type="password" required margin="normal" fullWidth variant="outlined"/>
                         <div className="botao">
                             <Button type="submit" onClick={(e)=>voltar(e)} variant="contained" color="primary">Voltar</Button>
-                            <Button type="submit" variant="contained" color="primary">Login</Button>
+                            <Button type="submit" variant="contained" onClick={(e) => logarConta(e)} color="primary">Login</Button>
                         </div>
                     </div>
             </form>

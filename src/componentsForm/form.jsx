@@ -38,10 +38,12 @@ function DadosUsuario(props){
         db.collection("users").doc(id).set({
             nome: nome,
             email: email,
-            senha: senha
+            senha: senha,
+            avatar: null
         }, {merge: true})
 
         funcoes()
+        window.location.href="/home"
     }
 
     function logarConta(e) {
@@ -50,7 +52,13 @@ function DadosUsuario(props){
         const senha = document.getElementById("senhaLogin").value;
 
         auth.signInWithEmailAndPassword(email, senha)
-        .then
+        .then((auth) => {
+            setEtapaAtual(2)
+            window.location.href="/home"
+            alert("Logado com sucesso")
+        }).catch((error) => {
+            alert(error.message)
+        })
 
     }
     
